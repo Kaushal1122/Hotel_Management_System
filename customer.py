@@ -24,9 +24,9 @@ class Cust_Win:
         self.var_mobile = StringVar()
         self.var_email = StringVar()
         self.var_nationality = StringVar()
-        self.var_address = StringVar()
         self.var_id_proof = StringVar()
         self.var_id_number = StringVar()
+        self.var_address = StringVar()
 
 
 
@@ -135,7 +135,7 @@ class Cust_Win:
         btnAdd=Button(btn_frame,text="Add",command=self.add_data,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnAdd.grid(row=0,column=0,padx=1)
 
-        btnUpdate=Button(btn_frame,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnUpdate=Button(btn_frame,text="Update",command=self.update,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnUpdate.grid(row=0,column=1,padx=1)
 
         btnDelete=Button(btn_frame,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
@@ -229,9 +229,9 @@ class Cust_Win:
                     self.var_mobile.get(),
                     self.var_email.get(),
                     self.var_nationality.get(),
-                    self.var_address.get(),
                     self.var_id_proof.get(),
-                    self.var_id_number.get()
+                    self.var_id_number.get(),
+                    self.var_address.get()
                 ))
                 conn.commit()
                 self.fetch_data()
@@ -272,6 +272,32 @@ class Cust_Win:
         self.var_id_number.set(row[9]),
         self.var_address.set(row[10])
         
+    def update(self):
+        if self.var_mobile.get()=="" or self.var_mother.get()=="":
+            messagebox.showerror("Error","All fields are required",parent=self.root)
+        else:
+            try:
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                my_cursor.execute("update customer set Name=%s,Mother=%s,Gender=%s,PostalCode=%s,Mobile=%s,Email=%s,Nationality=%s,Idproof=%s,Idnumber=%s,Address=%s where Ref=%s",(
+                    self.var_cust_name.get(),
+                    self.var_mother.get(),
+                    self.var_gender.get(),
+                    self.var_post.get(),
+                    self.var_mobile.get(),
+                    self.var_email.get(),
+                    self.var_nationality.get(),
+                    self.var_id_proof.get(),
+                    self.var_id_number.get(),
+                    self.var_address.get(),
+                    self.var_ref.get()))
+                conn.commit()
+                self.fetch_data()
+
+                conn.close()
+                messagebox.showinfo("Success","Customer details have been updated successfully",parent=self.root)
+            except Exception as es:
+                messagebox.showerror("Error",f"Due to {str(es)}",parent=self.root)
 
 
  
