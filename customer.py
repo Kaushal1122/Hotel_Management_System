@@ -52,6 +52,14 @@ class Cust_Win:
         label_gender=Label(labelframeleft,font=("arial",12,"bold"),text="Gender:",padx=2,pady=6)
         label_gender.grid(row=3,column=0,sticky=W)
 
+        combo_gender=ttk.Combobox(labelframeleft,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_gender["value"]=("Male","Female","Other")
+        combo_gender.current(0)
+        combo_gender.grid(row=3,column=1)
+
+
+
+
         #postalcode
         lblPostCode=Label(labelframeleft,text="Postal Code:",font=("arial",12,"bold"),padx=2,pady=6)
         lblPostCode.grid(row=4,column=0,sticky=W)
@@ -74,9 +82,19 @@ class Cust_Win:
         lblNationality=Label(labelframeleft,font=("arial",12,"bold"),text="Nationality:",padx=2,pady=6)
         lblNationality.grid(row=7,column=0,sticky=W)
 
+        combo_Nationality=ttk.Combobox(labelframeleft,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_Nationality["value"]=("Indian","Russian","American","British","Other")
+        combo_Nationality.current(0)
+        combo_Nationality.grid(row=7,column=1)
+
         #idproof type combobox
         lblIdProof=Label(labelframeleft,text="ID Proof Type:",font=("arial",12,"bold"),padx=2,pady=6)
         lblIdProof.grid(row=8,column=0,sticky=W)
+
+        combo_id=ttk.Combobox(labelframeleft,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_id["value"]=("Aadhar Card","Driving License","Passport","Pan Card","Other")
+        combo_id.current(0)
+        combo_id.grid(row=8,column=1)
 
         # id number
         lblIdNumber=Label(labelframeleft,font=("arial",12,"bold"),text="Id Number:",padx=2,pady=6)
@@ -89,6 +107,22 @@ class Cust_Win:
         lblAddress.grid(row=10,column=0,sticky=W)
         txtAddress=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
         txtAddress.grid(row=10,column=1)
+
+        #================buttons==================
+        btn_frame=Frame(labelframeleft,bd=2,relief=RIDGE)
+        btn_frame.place(x=0,y=400,width=412,height=40)
+
+        btnAdd=Button(btn_frame,text="Add",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnAdd.grid(row=0,column=0,padx=1)
+
+        btnUpdate=Button(btn_frame,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnUpdate.grid(row=0,column=1,padx=1)
+
+        btnDelete=Button(btn_frame,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnDelete.grid(row=0,column=2,padx=1)
+
+        btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnReset.grid(row=0,column=3,padx=1)
 
 
 
