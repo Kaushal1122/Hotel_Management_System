@@ -209,6 +209,8 @@ class Cust_Win:
         self.cust_table.column("address",width=100)
         
         self.cust_table.pack(fill=BOTH,expand=1)
+        self.cust_table.bind("<ButtonRelease-1>",self.get_cursor)
+        self.fetch_data()
 
 
     def add_data(self):
@@ -232,6 +234,7 @@ class Cust_Win:
                     self.var_id_number.get()
                 ))
                 conn.commit()
+                self.fetch_data()
                 conn.close()
                 messagebox.showinfo("Success","Customer details have been added successfully",parent=self.root)
             except Exception as es:
@@ -239,7 +242,36 @@ class Cust_Win:
 
 
 
+    def fetch_data(self):
+        conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+        my_cursor=conn.cursor()
+        my_cursor.execute("select * from customer")
+        rows=my_cursor.fetchall()
+        if len(rows)!=0:
+            self.cust_table.delete(*self.cust_table.get_children())
+            for i in rows:
+                self.cust_table.insert("",END,values=i)
+            conn.commit()
+        conn.close()
+    
 
+    def get_cursor(self,event=""):
+        cursor_row=self.cust_table.focus()
+        content=self.cust_table.item(cursor_row)
+        row=content["values"]
+
+        self.var_ref.set(row[0]),
+        self.var_cust_name.set(row[1]),
+        self.var_mother.set(row[2]),
+        self.var_gender.set(row[3]),
+        self.var_post.set(row[4]),
+        self.var_mobile.set(row[5]),
+        self.var_email.set(row[6]),
+        self.var_nationality.set(row[7]),
+        self.var_id_proof.set(row[8]),
+        self.var_id_number.set(row[9]),
+        self.var_address.set(row[10])
+        
 
 
  
