@@ -144,26 +144,30 @@ class Cust_Win:
         btnReset=Button(btn_frame,text="Reset",command=self.reset,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnReset.grid(row=0,column=3,padx=1)
 
-        #=================table frame==================
+        #=================table frame search system==================
 
         Table_frame=LabelFrame(self.root,bd=2,relief=RIDGE,text="View Details And Search System",font=("arial",12,"bold"),padx=2)
         Table_frame.place(x=435,y=50,width=860,height=490)
 
         lblSearchBy=Label(Table_frame,text="Search By:",font=("arial",12,"bold"),bg="red",fg="white")
-        lblSearchBy.grid(row=0,column=0,sticky=W)
+        lblSearchBy.grid(row=0,column=0,sticky=W,padx=2)
 
-        combo_Search=ttk.Combobox(Table_frame,font=("arial",12,"bold"),width=27,state="readonly")
+        self.search_var=StringVar()
+
+        combo_Search=ttk.Combobox(Table_frame,textvariable=self.search_var,font=("arial",12,"bold"),width=27,state="readonly")
         combo_Search["value"]=("Mobile Number","Ref")
         combo_Search.current(0)
         combo_Search.grid(row=0,column=1,padx=2)
 
-        txtSearch=ttk.Entry(Table_frame,font=("arial",13,"bold"),width=24)
+        self.txt_search=StringVar()
+
+        txtSearch=ttk.Entry(Table_frame,textvariable=self.txt_search,font=("arial",13,"bold"),width=24)
         txtSearch.grid(row=0,column=2,padx=2)
 
-        btnSearch=Button(Table_frame,text="Search",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnSearch=Button(Table_frame,text="Search",command=self.search,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnSearch.grid(row=0,column=3,padx=1)
 
-        btnShowAll=Button(Table_frame,text="Show All",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnShowAll=Button(Table_frame,text="Show All",command=self.fetch_data,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnShowAll.grid(row=0,column=4,padx=1)
 
 
@@ -329,6 +333,37 @@ class Cust_Win:
 
         x = random.randint(1000, 9999)
         self.var_ref.set(str(x))
+
+    def search(self):
+        if self.search_var.get() == "" or self.txt_search.get() == "":
+            messagebox.showerror("Error", "Please select a search option and enter a value.")
+            return
+    
+        conn = mysql.connector.connect(host="localhost", username="root", password="Kaushal@2815", database="kaushal")
+        my_cursor = conn.cursor()
+    
+        column_map = {
+            "Ref": "ref",
+            "Mobile Number": "mobile"
+        }
+
+        column = column_map.get(self.search_var.get())
+        if column is None:
+            messagebox.showerror("Error", "Invalid search option selected.")
+            return
+
+        my_cursor.execute(f"SELECT * FROM customer WHERE {column} = %s", (self.txt_search.get(),))
+        rows = my_cursor.fetchall()
+
+        if len(rows) != 0:
+            self.cust_table.delete(*self.cust_table.get_children())
+            for i in rows:
+                self.cust_table.insert("", END, values=i)
+        else:
+            messagebox.showinfo("No Result", "No matching records found.")
+    
+        conn.commit()
+        conn.close()
 
 
  
