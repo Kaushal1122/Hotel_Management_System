@@ -124,6 +124,73 @@ class Cust_Win:
         btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnReset.grid(row=0,column=3,padx=1)
 
+        #=================table frame==================
+
+        Table_frame=LabelFrame(self.root,bd=2,relief=RIDGE,text="View Details And Search System",font=("arial",12,"bold"),padx=2)
+        Table_frame.place(x=435,y=50,width=860,height=490)
+
+        lblSearchBy=Label(Table_frame,text="Search By:",font=("arial",12,"bold"),bg="red",fg="white")
+        lblSearchBy.grid(row=0,column=0,sticky=W)
+
+        combo_Search=ttk.Combobox(Table_frame,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_Search["value"]=("Mobile Number","Ref")
+        combo_Search.current(0)
+        combo_Search.grid(row=0,column=1,padx=2)
+
+        txtSearch=ttk.Entry(Table_frame,font=("arial",13,"bold"),width=24)
+        txtSearch.grid(row=0,column=2,padx=2)
+
+        btnSearch=Button(Table_frame,text="Search",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnSearch.grid(row=0,column=3,padx=1)
+
+        btnShowAll=Button(Table_frame,text="Show All",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnShowAll.grid(row=0,column=4,padx=1)
+
+
+        #=================Show data table==================
+
+        details_table=Frame(Table_frame,bd=2,relief=RIDGE)
+        details_table.place(x=0,y=50,width=860,height=350)
+
+        scroll_x=ttk.Scrollbar(details_table,orient=HORIZONTAL)
+        scroll_y=ttk.Scrollbar(details_table,orient=VERTICAL)
+
+        self.cust_table=ttk.Treeview(details_table,column=("ref","name","mother","gender","post","mobile","email","nationality","idproof","idnumber","address"),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+
+        scroll_x.pack(side=BOTTOM,fill=X)
+        scroll_y.pack(side=RIGHT,fill=Y)
+
+        scroll_x.config(command=self.cust_table.xview)
+        scroll_y.config(command=self.cust_table.yview)
+
+        self.cust_table.heading("ref",text="Reference No")
+        self.cust_table.heading("name",text="Customer Name")
+        self.cust_table.heading("mother",text="Mother Name")
+        self.cust_table.heading("gender",text="Gender")
+        self.cust_table.heading("post",text="Postal Code")
+        self.cust_table.heading("mobile",text="Mobile No")
+        self.cust_table.heading("email",text="Email")
+        self.cust_table.heading("nationality",text="Nationality")
+        self.cust_table.heading("idproof",text="ID Proof Type")
+        self.cust_table.heading("idnumber",text="ID Number")
+        self.cust_table.heading("address",text="Address")
+
+        self.cust_table["show"]="headings"
+        self.cust_table.column("ref",width=100)
+        self.cust_table.column("name",width=100)
+        self.cust_table.column("mother",width=100)
+        self.cust_table.column("gender",width=100)
+        self.cust_table.column("post",width=100)
+        self.cust_table.column("mobile",width=100)
+        self.cust_table.column("email",width=100)
+        self.cust_table.column("nationality",width=100)
+        self.cust_table.column("idproof",width=100)
+        self.cust_table.column("idnumber",width=100)
+        self.cust_table.column("address",width=100)
+        
+        self.cust_table.pack(fill=BOTH,expand=1)
+
+
 
 
 
