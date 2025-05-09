@@ -90,6 +90,8 @@ class HotelManagementSystem:
         self.new_window=Toplevel(self.root)
         self.app=Cust_Win(self.new_window)
 
+        
+
 
 
 

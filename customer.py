@@ -138,10 +138,10 @@ class Cust_Win:
         btnUpdate=Button(btn_frame,text="Update",command=self.update,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnUpdate.grid(row=0,column=1,padx=1)
 
-        btnDelete=Button(btn_frame,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnDelete=Button(btn_frame,text="Delete",command=self.mDelete,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnDelete.grid(row=0,column=2,padx=1)
 
-        btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnReset=Button(btn_frame,text="Reset",command=self.reset,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnReset.grid(row=0,column=3,padx=1)
 
         #=================table frame==================
@@ -298,6 +298,37 @@ class Cust_Win:
                 messagebox.showinfo("Success","Customer details have been updated successfully",parent=self.root)
             except Exception as es:
                 messagebox.showerror("Error",f"Due to {str(es)}",parent=self.root)
+
+    def mDelete(self):
+        mDelete=messagebox.askyesno("Hotel Management System","Do you want to delete this customer",parent=self.root)
+        if mDelete>0:
+            conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+            my_cursor=conn.cursor()
+            query="delete from customer where Ref=%s"
+            value=(self.var_ref.get(),)
+            my_cursor.execute(query,value)
+        else:
+            if not mDelete:
+                return
+        conn.commit()
+        self.fetch_data()
+        conn.close()
+
+    def reset(self):
+        #self.var_ref.set(""),
+        self.var_cust_name.set(""),
+        self.var_mother.set(""),
+        #self.var_gender.set(""),
+        self.var_post.set(""),
+        self.var_mobile.set(""),
+        self.var_email.set(""),
+        #self.var_nationality.set(""),
+        #self.var_id_proof.set(""),
+        self.var_id_number.set(""),
+        self.var_address.set("")
+
+        x = random.randint(1000, 9999)
+        self.var_ref.set(str(x))
 
 
  
