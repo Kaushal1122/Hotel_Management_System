@@ -2,6 +2,8 @@ from tkinter import *
 from PIL import Image,ImageTk
 from tkinter import ttk
 import random
+from time import strftime
+from datetime import datetime
 import mysql.connector
 from tkinter import messagebox
 
@@ -115,7 +117,7 @@ class Roombooking:
         txtTotalCost.grid(row=9,column=1)
 
         #Bill Button
-        btnBill=Button(labelframeleft,text="Bill",font=("arial",11,"bold"),bg="black",fg="gold",width=9)
+        btnBill=Button(labelframeleft,text="Bill",command=self.total,font=("arial",11,"bold"),bg="black",fg="gold",width=9)
         btnBill.grid(row=10,column=0,padx=1,sticky=W)
 
 
@@ -133,7 +135,7 @@ class Roombooking:
         btnDelete=Button(btn_frame,command=self.mDelete,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnDelete.grid(row=0,column=2,padx=1)
 
-        btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnReset=Button(btn_frame,command=self.reset,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnReset.grid(row=0,column=3,padx=1)
 
         #=================right side image==================
@@ -166,10 +168,10 @@ class Roombooking:
         txtSearch=ttk.Entry(Table_frame,textvariable=self.txt_search,font=("arial",13,"bold"),width=24)
         txtSearch.grid(row=0,column=2,padx=2)
 
-        btnSearch=Button(Table_frame,text="Search",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnSearch=Button(Table_frame,text="Search",command=self.search,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnSearch.grid(row=0,column=3,padx=1)
 
-        btnShowAll=Button(Table_frame,text="Show All",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnShowAll=Button(Table_frame,text="Show All",command=self.fetch_data,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnShowAll.grid(row=0,column=4,padx=1)
 
         #=================Show data table==================
@@ -308,6 +310,20 @@ class Roombooking:
         self.fetch_data()
         conn.close()
 
+    #=================Reset data==================
+
+    def reset(self):
+        self.var_contact.set(""),
+        self.var_checkin.set(""),
+        self.var_checkout.set(""),
+        self.var_roomtype.set("Standard"),
+        self.var_roomavailable.set(""),
+        self.var_meal.set(""),
+        self.var_noOfdays.set(""),
+        self.var_paidtax.set(""),
+        self.var_subtotal.set(""),
+        self.var_totalcost.set("")
+
 
 
     #=================All data fetch==================
@@ -396,6 +412,158 @@ class Roombooking:
 
                 lbl5=Label(showDataFrame,text=row,font=("arial",12,"bold"))
                 lbl5.place(x=90,y=120)
+
+    #=================Search data==================
+    def search(self):
+        if self.search_var.get() == "" or self.txt_search.get() == "":
+            messagebox.showerror("Error", "Please select a search option and enter a value.")
+            return
+    
+        conn = mysql.connector.connect(host="localhost", username="root", password="Kaushal@2815", database="kaushal")
+        my_cursor = conn.cursor()
+    
+        column_map = {
+            "Contact": "Contact",
+            "Room": "RoomNumber"
+        }
+
+        column = column_map.get(self.search_var.get())
+        if column is None:
+            messagebox.showerror("Error", "Invalid search option selected.")
+            return
+
+        my_cursor.execute(f"SELECT * FROM room WHERE {column} = %s", (self.txt_search.get(),))
+        rows = my_cursor.fetchall()
+
+        if len(rows) != 0:
+            self.room_table.delete(*self.room_table.get_children())
+            for i in rows:
+                self.room_table.insert("", END, values=i)
+        else:
+            messagebox.showinfo("No Result", "No matching records found.")
+    
+        conn.commit()
+        conn.close()
+
+
+    #================Total==================
+    def total(self):
+        inDate=self.var_checkin.get()
+        outDate=self.var_checkout.get()
+        inDate=datetime.strptime(inDate,"%d/%m/%Y")
+        outDate=datetime.strptime(outDate,"%d/%m/%Y")
+        self.var_noOfdays.set(abs((outDate-inDate).days))
+
+        if self.var_meal.get()=="Breakfast" and self.var_roomtype.get()=="Standard":
+            q1=float(300)
+            q2=float(700)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+
+        elif self.var_meal.get()=="Breakfast" and self.var_roomtype.get()=="Deluxe":
+            q1=float(300)
+            q2=float(1000)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        
+        elif self.var_meal.get()=="Breakfast" and self.var_roomtype.get()=="Suite":
+            q1=float(300)
+            q2=float(1500)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Lunch" and self.var_roomtype.get()=="Standard":
+            q1=float(500)
+            q2=float(700)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Lunch" and self.var_roomtype.get()=="Deluxe":
+            q1=float(500)
+            q2=float(1000)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Lunch" and self.var_roomtype.get()=="Suite":
+            q1=float(500)
+            q2=float(1500)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Dinner" and self.var_roomtype.get()=="Standard":
+            q1=float(700)
+            q2=float(700)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Dinner" and self.var_roomtype.get()=="Deluxe":
+            q1=float(700)
+            q2=float(1000)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
+        elif self.var_meal.get()=="Dinner" and self.var_roomtype.get()=="Suite":
+            q1=float(700)
+            q2=float(1500)
+            q3=float(self.var_noOfdays.get())
+            q4=float(q1+q2)
+            q5=float(q3*q4)
+            Tax="Rs."+str("%.2f"%((q5)*0.1))
+            ST="Rs."+str("%.2f"%(q5))
+            TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+            self.var_paidtax.set(Tax)
+            self.var_subtotal.set(ST)
+            self.var_totalcost.set(TT)
 
 
 
