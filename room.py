@@ -120,7 +120,7 @@ class Roombooking:
         btn_frame=Frame(labelframeleft,bd=2,relief=RIDGE)
         btn_frame.place(x=0,y=400,width=412,height=40)
 
-        btnAdd=Button(btn_frame,text="Add",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnAdd=Button(btn_frame,text="Add",command=self.add_data,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnAdd.grid(row=0,column=0,padx=1)
 
         btnUpdate=Button(btn_frame,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
@@ -176,32 +176,72 @@ class Roombooking:
         scroll_x=ttk.Scrollbar(details_table,orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(details_table,orient=VERTICAL)
 
-        self.cust_table=ttk.Treeview(details_table,column=("contact","checkin","checkout","roomtype","roomavailable","meal","noOfdays",),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.room_table=ttk.Treeview(details_table,column=("contact","checkin","checkout","roomtype","roomavailable","meal","noOfdays",),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
 
         scroll_x.pack(side=BOTTOM,fill=X)
         scroll_y.pack(side=RIGHT,fill=Y)
 
-        scroll_x.config(command=self.cust_table.xview)
-        scroll_y.config(command=self.cust_table.yview)
+        scroll_x.config(command=self.room_table.xview)
+        scroll_y.config(command=self.room_table.yview)
 
-        self.cust_table.heading("contact",text="Contact No")
-        self.cust_table.heading("checkin",text="Check-in Date")
-        self.cust_table.heading("checkout",text="Check-out Date")
-        self.cust_table.heading("roomtype",text="Room Type")
-        self.cust_table.heading("roomavailable",text="Room No")
-        self.cust_table.heading("meal",text="Meal")
-        self.cust_table.heading("noOfdays",text="No of Days")
+        self.room_table.heading("contact",text="Contact No")
+        self.room_table.heading("checkin",text="Check-in Date")
+        self.room_table.heading("checkout",text="Check-out Date")
+        self.room_table.heading("roomtype",text="Room Type")
+        self.room_table.heading("roomavailable",text="Room No")
+        self.room_table.heading("meal",text="Meal")
+        self.room_table.heading("noOfdays",text="No of Days")
 
-        self.cust_table["show"]="headings"
-        self.cust_table.column("contact",width=100)
-        self.cust_table.column("checkin",width=100)
-        self.cust_table.column("checkout",width=100)
-        self.cust_table.column("roomtype",width=100)
-        self.cust_table.column("roomavailable",width=100)
-        self.cust_table.column("meal",width=100)
-        self.cust_table.column("noOfdays",width=100)
+        self.room_table["show"]="headings"
+        self.room_table.column("contact",width=100)
+        self.room_table.column("checkin",width=100)
+        self.room_table.column("checkout",width=100)
+        self.room_table.column("roomtype",width=100)
+        self.room_table.column("roomavailable",width=100)
+        self.room_table.column("meal",width=100)
+        self.room_table.column("noOfdays",width=100)
         
-        self.cust_table.pack(fill=BOTH,expand=1)
+        self.room_table.pack(fill=BOTH,expand=1)
+        self.fetch_data()
+
+    def add_data(self):
+        if self.var_contact.get()=="" or self.var_checkin.get()=="":
+            messagebox.showerror("Error","All fields are required",parent=self.root)
+        else:
+            try:
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                my_cursor.execute("insert into room values(%s,%s,%s,%s,%s,%s,%s)",(
+                    self.var_contact.get(),
+                    self.var_checkin.get(),
+                    self.var_checkout.get(),
+                    self.var_roomtype.get(),
+                    self.var_roomavailable.get(),
+                    self.var_meal.get(),
+                    self.var_noOfdays.get()
+                ))
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo("Success","Room "booked successfully",parent=self.root)
+            except Exception as es:
+                messagebox.showerror("Error",f"Due to {str(es)}",parent=self.root)
+    
+    #=================fetch data==================
+    def fetch_data(self):
+        conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+        my_cursor=conn.cursor()
+        my_cursor.execute("select * from room")
+        rows=my_cursor.fetchall()
+        if len(rows)!=0:
+            self.room_table.delete(*self.room_table.get_children())
+            for i in rows:
+                self.room_table.insert("",END,values=i)
+            conn.commit()
+        conn.close()
+
+
+
     #=================All data fetch==================
 
     def Fetch_Contact(self):
