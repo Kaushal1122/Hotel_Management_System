@@ -34,8 +34,66 @@ class Roombooking:
         lbl_cust_contact=Label(labelframeleft,text="Customer Contact",font=("arial",12,"bold"),padx=2,pady=6)
         lbl_cust_contact.grid(row=0,column=0,sticky=W)
 
-        entry_contact=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29,state="readonly")
+        entry_contact=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
         entry_contact.grid(row=0,column=1)
+
+        #Check-in date
+        check_in_date=Label(labelframeleft,text="Check-in Date:",font=("arial",12,"bold"),padx=2,pady=6)
+        check_in_date.grid(row=1,column=0,sticky=W)
+        txtcheck_in_date=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtcheck_in_date.grid(row=1,column=1)
+
+        #Check-out date
+        lbl_Check_out=Label(labelframeleft,text="Check-out Date:",font=("arial",12,"bold"),padx=2,pady=6)
+        lbl_Check_out.grid(row=2,column=0,sticky=W)
+        txt_Check_out=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txt_Check_out.grid(row=2,column=1)
+
+        #Room Type
+        label_RoomType=Label(labelframeleft,text="Room Type:",font=("arial",12,"bold"),padx=2,pady=6)
+        label_RoomType.grid(row=3,column=0,sticky=W)
+
+        combo_RoomType=ttk.Combobox(labelframeleft,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_RoomType["value"]=("Standard","Deluxe","Suite")
+        combo_RoomType.current(0)
+        combo_RoomType.grid(row=3,column=1)
+
+        #Available Room
+        lblRoomAvailable=Label(labelframeleft,text="Available Room:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblRoomAvailable.grid(row=4,column=0,sticky=W)
+        txtRoomAvailable=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtRoomAvailable.grid(row=4,column=1)
+
+        #Meal
+        lblMeal=Label(labelframeleft,text="Meal:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblMeal.grid(row=5,column=0,sticky=W)
+        txtMeal=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtMeal.grid(row=5,column=1)
+        
+
+        #No of days
+        lblNoOfDays=Label(labelframeleft,text="No of Days:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblNoOfDays.grid(row=6,column=0,sticky=W)
+        txtNoOfDays=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtNoOfDays.grid(row=6,column=1)
+
+        #Paid Tax
+        lblPaidTax=Label(labelframeleft,text="Paid Tax:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblPaidTax.grid(row=7,column=0,sticky=W)
+        txtPaidTax=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtPaidTax.grid(row=7,column=1)
+
+        #Sub Total
+        lblSubTotal=Label(labelframeleft,text="Sub Total:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblSubTotal.grid(row=8,column=0,sticky=W)
+        txtSubTotal=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtSubTotal.grid(row=8,column=1)
+
+        #Total Cost
+        lblTotalCost=Label(labelframeleft,text="Total Cost:",font=("arial",12,"bold"),padx=2,pady=6)
+        lblTotalCost.grid(row=9,column=0,sticky=W)
+        txtTotalCost=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtTotalCost.grid(row=9,column=1)
 
 
 
