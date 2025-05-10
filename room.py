@@ -12,6 +12,7 @@ class Roombooking:
         self.root.geometry("1295x550+230+220")
 
         #=================variables==================
+
         self.var_contact=StringVar()
         self.var_checkin=StringVar()
         self.var_checkout=StringVar()
@@ -24,11 +25,13 @@ class Roombooking:
         self.var_totalcost=StringVar()
 
         #=================title==================
+
         lbl_title=Label(self.root,text="ROOM BOOKING DETAILS",font=("times new roman",18,"bold"),bg="black",fg="gold",bd=4,relief=RIDGE)
         lbl_title.place(x=0,y=0,width=1295,height=50)
 
 
         #=================logo==================
+
         img2=Image.open(r"D:\Hotel_Management_System\images\logohotel.png")
         img2=img2.resize((100,40),Image.LANCZOS)
         self.photoimg2=ImageTk.PhotoImage(img2)
@@ -117,16 +120,17 @@ class Roombooking:
 
 
         #================buttons==================
+
         btn_frame=Frame(labelframeleft,bd=2,relief=RIDGE)
         btn_frame.place(x=0,y=400,width=412,height=40)
 
         btnAdd=Button(btn_frame,text="Add",command=self.add_data,font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnAdd.grid(row=0,column=0,padx=1)
 
-        btnUpdate=Button(btn_frame,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnUpdate=Button(btn_frame,command=self.update,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnUpdate.grid(row=0,column=1,padx=1)
 
-        btnDelete=Button(btn_frame,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnDelete=Button(btn_frame,command=self.mDelete,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
         btnDelete.grid(row=0,column=2,padx=1)
 
         btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
@@ -202,7 +206,11 @@ class Roombooking:
         self.room_table.column("noOfdays",width=100)
         
         self.room_table.pack(fill=BOTH,expand=1)
+        self.room_table.bind("<ButtonRelease-1>",self.get_cursor)
         self.fetch_data()
+
+
+    #=================Add data==================
 
     def add_data(self):
         if self.var_contact.get()=="" or self.var_checkin.get()=="":
@@ -223,11 +231,12 @@ class Roombooking:
                 conn.commit()
                 self.fetch_data()
                 conn.close()
-                messagebox.showinfo("Success","Room "booked successfully",parent=self.root)
+                messagebox.showinfo("Success","Room booked successfully",parent=self.root)
             except Exception as es:
                 messagebox.showerror("Error",f"Due to {str(es)}",parent=self.root)
     
     #=================fetch data==================
+
     def fetch_data(self):
         conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
         my_cursor=conn.cursor()
@@ -238,6 +247,65 @@ class Roombooking:
             for i in rows:
                 self.room_table.insert("",END,values=i)
             conn.commit()
+        conn.close()
+
+    #=================get cursor==================
+
+    def get_cursor(self,event=""):
+        cursor_row=self.room_table.focus()
+        content=self.room_table.item(cursor_row)
+        row=content["values"]
+
+        self.var_contact.set(row[0]),
+        self.var_checkin.set(row[1]),
+        self.var_checkout.set(row[2]),
+        self.var_roomtype.set(row[3]),
+        self.var_roomavailable.set(row[4]),
+        self.var_meal.set(row[5]),
+        self.var_noOfdays.set(row[6])
+
+
+    #=================Update data==================
+
+    def update(self):
+        if self.var_contact.get()=="" or self.var_checkin.get()=="":
+            messagebox.showerror("Error","All fields are required",parent=self.root)
+        else:
+            try:
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                my_cursor.execute("update room set CheckIn=%s,CheckOut=%s,Roomtype=%s,RoomNumber=%s,Meal=%s,noOfdays=%s where Contact=%s",(
+                    self.var_checkin.get(),
+                    self.var_checkout.get(),
+                    self.var_roomtype.get(),
+                    self.var_roomavailable.get(),
+                    self.var_meal.get(),
+                    self.var_noOfdays.get(),
+                    self.var_contact.get()))
+                conn.commit()
+                self.fetch_data()
+
+                conn.close()
+                messagebox.showinfo("Success","Room details have been updated successfully",parent=self.root)
+            except Exception as es:
+                messagebox.showerror("Error",f"Due to {str(es)}",parent=self.root)
+
+
+    #=================Delete data==================
+
+    def mDelete(self):
+        mDelete=messagebox.askyesno("Hotel Management System","Do you want to delete this room deatils",parent=self.root)
+        if mDelete>0:
+            conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+            my_cursor=conn.cursor()
+            query="delete from room where Contact=%s"
+            value=(self.var_contact.get(),)
+            my_cursor.execute(query,value)
+        else:
+            if not mDelete:
+                return
+        conn.commit()
+        self.fetch_data()
         conn.close()
 
 
