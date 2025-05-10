@@ -50,26 +50,26 @@ class Roombooking:
         entry_contact.grid(row=0,column=1,sticky=W)
 
         #Fetch data button
-        btnFetchData=Button(labelframeleft,text="Fetch Data",font=("arial",8,"bold"),bg="black",fg="gold",width=8)
+        btnFetchData=Button(labelframeleft,command=self.Fetch_Contact,text="Fetch Data",font=("arial",8,"bold"),bg="black",fg="gold",width=8)
         btnFetchData.place(x=347,y=4)
 
         #Check-in date
         check_in_date=Label(labelframeleft,text="Check-in Date:",font=("arial",12,"bold"),padx=2,pady=6)
         check_in_date.grid(row=1,column=0,sticky=W)
-        txtcheck_in_date=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtcheck_in_date=ttk.Entry(labelframeleft,textvariable=self.var_checkin,font=("arial",13,"bold"),width=29)
         txtcheck_in_date.grid(row=1,column=1)
 
         #Check-out date
         lbl_Check_out=Label(labelframeleft,text="Check-out Date:",font=("arial",12,"bold"),padx=2,pady=6)
         lbl_Check_out.grid(row=2,column=0,sticky=W)
-        txt_Check_out=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txt_Check_out=ttk.Entry(labelframeleft,textvariable=self.var_checkout,font=("arial",13,"bold"),width=29)
         txt_Check_out.grid(row=2,column=1)
 
         #Room Type
         label_RoomType=Label(labelframeleft,text="Room Type:",font=("arial",12,"bold"),padx=2,pady=6)
         label_RoomType.grid(row=3,column=0,sticky=W)
 
-        combo_RoomType=ttk.Combobox(labelframeleft,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_RoomType=ttk.Combobox(labelframeleft,textvariable=self.var_roomtype,font=("arial",12,"bold"),width=27,state="readonly")
         combo_RoomType["value"]=("Standard","Deluxe","Suite")
         combo_RoomType.current(0)
         combo_RoomType.grid(row=3,column=1)
@@ -77,38 +77,38 @@ class Roombooking:
         #Available Room
         lblRoomAvailable=Label(labelframeleft,text="Available Room:",font=("arial",12,"bold"),padx=2,pady=6)
         lblRoomAvailable.grid(row=4,column=0,sticky=W)
-        txtRoomAvailable=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtRoomAvailable=ttk.Entry(labelframeleft,textvariable=self.var_roomavailable,font=("arial",13,"bold"),width=29)
         txtRoomAvailable.grid(row=4,column=1)
 
         #Meal
         lblMeal=Label(labelframeleft,text="Meal:",font=("arial",12,"bold"),padx=2,pady=6)
         lblMeal.grid(row=5,column=0,sticky=W)
-        txtMeal=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtMeal=ttk.Entry(labelframeleft,textvariable=self.var_meal,font=("arial",13,"bold"),width=29)
         txtMeal.grid(row=5,column=1)
         
 
         #No of days
         lblNoOfDays=Label(labelframeleft,text="No of Days:",font=("arial",12,"bold"),padx=2,pady=6)
         lblNoOfDays.grid(row=6,column=0,sticky=W)
-        txtNoOfDays=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtNoOfDays=ttk.Entry(labelframeleft,textvariable=self.var_noOfdays,font=("arial",13,"bold"),width=29)
         txtNoOfDays.grid(row=6,column=1)
 
         #Paid Tax
         lblPaidTax=Label(labelframeleft,text="Paid Tax:",font=("arial",12,"bold"),padx=2,pady=6)
         lblPaidTax.grid(row=7,column=0,sticky=W)
-        txtPaidTax=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtPaidTax=ttk.Entry(labelframeleft,textvariable=self.var_paidtax,font=("arial",13,"bold"),width=29)
         txtPaidTax.grid(row=7,column=1)
 
         #Sub Total
         lblSubTotal=Label(labelframeleft,text="Sub Total:",font=("arial",12,"bold"),padx=2,pady=6)
         lblSubTotal.grid(row=8,column=0,sticky=W)
-        txtSubTotal=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtSubTotal=ttk.Entry(labelframeleft,textvariable=self.var_subtotal,font=("arial",13,"bold"),width=29)
         txtSubTotal.grid(row=8,column=1)
 
         #Total Cost
         lblTotalCost=Label(labelframeleft,text="Total Cost:",font=("arial",12,"bold"),padx=2,pady=6)
         lblTotalCost.grid(row=9,column=0,sticky=W)
-        txtTotalCost=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
+        txtTotalCost=ttk.Entry(labelframeleft,textvariable=self.var_totalcost,font=("arial",13,"bold"),width=29)
         txtTotalCost.grid(row=9,column=1)
 
         #Bill Button
@@ -202,35 +202,93 @@ class Roombooking:
         self.cust_table.column("noOfdays",width=100)
         
         self.cust_table.pack(fill=BOTH,expand=1)
+    #=================All data fetch==================
 
     def Fetch_Contact(self):
-        if self.entry_contact.get()=="":
-            messagebox.showerror("Error","Please enter contact number")
+        if self.var_contact.get()=="":
+            messagebox.showerror("Error","Please enter contact number",parent=self.root)
         else:
-            conn=mysql.connector.connect(host="localhost",username="root",password="password",database="hotel_management")
+            conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
             my_cursor=conn.cursor()
-            my_cursor.execute("select * from room where contact=%s",(self.entry_contact.get(),))
+            query=("select Name from customer where Mobile=%s")
+            value=(self.var_contact.get(),)
+            my_cursor.execute(query,value)
             row=my_cursor.fetchone()
             if row==None:
-                messagebox.showerror("Error","No record found")
+                messagebox.showerror("Error","No record found",parent=self.root)
             else:
-                self.txtcheck_in_date.delete(0,END)
-                self.txtcheck_in_date.insert(0,row[1])
-                self.txt_Check_out.delete(0,END)
-                self.txt_Check_out.insert(0,row[2])
-                self.combo_RoomType.set(row[3])
-                self.txtRoomAvailable.delete(0,END)
-                self.txtRoomAvailable.insert(0,row[4])
-                self.txtMeal.delete(0,END)
-                self.txtMeal.insert(0,row[5])
-                self.txtNoOfDays.delete(0,END)
-                self.txtNoOfDays.insert(0,row[6])
-                self.txtPaidTax.delete(0,END)
-                self.txtPaidTax.insert(0,row[7])
-                self.txtSubTotal.delete(0,END)
-                self.txtSubTotal.insert(0,row[8])
-                self.txtTotalCost.delete(0,END)
-                self.txtTotalCost.insert(0,row[9])
+                conn.commit()
+                conn.close()
+
+                showDataFrame=Frame(self.root,bd=4,relief=RIDGE,padx=2)
+                showDataFrame.place(x=450,y=55,width=300,height=180)
+
+                #=================Name==================
+
+                lblName=Label(showDataFrame,text="Name",font=("arial",12,"bold"))
+                lblName.place(x=0,y=0)
+
+                lbl=Label(showDataFrame,text=row,font=("arial",12,"bold"))
+                lbl.place(x=90,y=0)
+
+                #=================Gender==================
+
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                query=("select Gender from customer where Mobile=%s")
+                value=(self.var_contact.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+
+                lblGender=Label(showDataFrame,text="Gender",font=("arial",12,"bold"))
+                lblGender.place(x=0,y=30)
+
+                lbl2=Label(showDataFrame,text=row,font=("arial",12,"bold"))
+                lbl2.place(x=90,y=30)
+
+                #=================Email==================
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                query=("select Email from customer where Mobile=%s")
+                value=(self.var_contact.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+
+                lblEmail=Label(showDataFrame,text="Email",font=("arial",12,"bold"))
+                lblEmail.place(x=0,y=60)
+
+                lbl3=Label(showDataFrame,text=row,font=("arial",12,"bold"))
+                lbl3.place(x=90,y=60)
+
+                #=================Nationality==================
+
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                query=("select Nationality from customer where Mobile=%s")
+                value=(self.var_contact.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+
+                lblNationality=Label(showDataFrame,text="Nationality",font=("arial",12,"bold"))
+                lblNationality.place(x=0,y=90)
+
+                lbl4=Label(showDataFrame,text=row,font=("arial",12,"bold"))
+                lbl4.place(x=90,y=90)
+
+                #=================Address==================
+
+                conn=mysql.connector.connect(host="localhost",username="root",password="Kaushal@2815",database="kaushal")
+                my_cursor=conn.cursor()
+                query=("select Address from customer where Mobile=%s")
+                value=(self.var_contact.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+                lblAddress=Label(showDataFrame,text="Address",font=("arial",12,"bold"))
+                lblAddress.place(x=0,y=120)
+
+                lbl5=Label(showDataFrame,text=row,font=("arial",12,"bold"))
+                lbl5.place(x=90,y=120)
+
 
 
 
