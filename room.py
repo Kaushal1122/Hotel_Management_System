@@ -11,6 +11,18 @@ class Roombooking:
         self.root.title("Hotel Management System")
         self.root.geometry("1295x550+230+220")
 
+        #=================variables==================
+        self.var_contact=StringVar()
+        self.var_checkin=StringVar()
+        self.var_checkout=StringVar()
+        self.var_roomtype=StringVar()
+        self.var_roomavailable=StringVar()
+        self.var_meal=StringVar()
+        self.var_noOfdays=StringVar()
+        self.var_paidtax=StringVar()
+        self.var_subtotal=StringVar()
+        self.var_totalcost=StringVar()
+
         #=================title==================
         lbl_title=Label(self.root,text="ROOM BOOKING DETAILS",font=("times new roman",18,"bold"),bg="black",fg="gold",bd=4,relief=RIDGE)
         lbl_title.place(x=0,y=0,width=1295,height=50)
@@ -30,12 +42,16 @@ class Roombooking:
         labelframeleft.place(x=5,y=50,width=425,height=490)
 
         #=================label and entries==================
-        #Customer Ref
+        #Customer Contact
         lbl_cust_contact=Label(labelframeleft,text="Customer Contact",font=("arial",12,"bold"),padx=2,pady=6)
         lbl_cust_contact.grid(row=0,column=0,sticky=W)
 
-        entry_contact=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
-        entry_contact.grid(row=0,column=1)
+        entry_contact=ttk.Entry(labelframeleft,textvariable=self.var_contact,font=("arial",13,"bold"),width=20)
+        entry_contact.grid(row=0,column=1,sticky=W)
+
+        #Fetch data button
+        btnFetchData=Button(labelframeleft,text="Fetch Data",font=("arial",8,"bold"),bg="black",fg="gold",width=8)
+        btnFetchData.place(x=347,y=4)
 
         #Check-in date
         check_in_date=Label(labelframeleft,text="Check-in Date:",font=("arial",12,"bold"),padx=2,pady=6)
@@ -94,6 +110,127 @@ class Roombooking:
         lblTotalCost.grid(row=9,column=0,sticky=W)
         txtTotalCost=ttk.Entry(labelframeleft,font=("arial",13,"bold"),width=29)
         txtTotalCost.grid(row=9,column=1)
+
+        #Bill Button
+        btnBill=Button(labelframeleft,text="Bill",font=("arial",11,"bold"),bg="black",fg="gold",width=9)
+        btnBill.grid(row=10,column=0,padx=1,sticky=W)
+
+
+        #================buttons==================
+        btn_frame=Frame(labelframeleft,bd=2,relief=RIDGE)
+        btn_frame.place(x=0,y=400,width=412,height=40)
+
+        btnAdd=Button(btn_frame,text="Add",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnAdd.grid(row=0,column=0,padx=1)
+
+        btnUpdate=Button(btn_frame,text="Update",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnUpdate.grid(row=0,column=1,padx=1)
+
+        btnDelete=Button(btn_frame,text="Delete",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnDelete.grid(row=0,column=2,padx=1)
+
+        btnReset=Button(btn_frame,text="Reset",font=("arial",12,"bold"),bg="black",fg="gold",width=9)
+        btnReset.grid(row=0,column=3,padx=1)
+
+        #=================right side image==================
+
+        img3=Image.open(r"D:\Hotel_Management_System\images\bed.jpg")
+        img3=img3.resize((520,300),Image.LANCZOS)
+        self.photoimg3=ImageTk.PhotoImage(img3)
+
+
+        lblimg=Label(self.root,image=self.photoimg3,bd=0,relief=RIDGE)
+        lblimg.place(x=760,y=55,width=520,height=200)        
+
+        #=================table frame search system==================
+
+        Table_frame=LabelFrame(self.root,bd=2,relief=RIDGE,text="View Details And Search System",font=("arial",12,"bold"),padx=2)
+        Table_frame.place(x=435,y=280,width=860,height=260)
+
+        lblSearchBy=Label(Table_frame,text="Search By:",font=("arial",12,"bold"),bg="red",fg="white")
+        lblSearchBy.grid(row=0,column=0,sticky=W,padx=2)
+
+        self.search_var=StringVar()
+
+        combo_Search=ttk.Combobox(Table_frame,textvariable=self.search_var,font=("arial",12,"bold"),width=27,state="readonly")
+        combo_Search["value"]=("Contact","Room")
+        combo_Search.current(0)
+        combo_Search.grid(row=0,column=1,padx=2)
+
+        self.txt_search=StringVar()
+
+        txtSearch=ttk.Entry(Table_frame,textvariable=self.txt_search,font=("arial",13,"bold"),width=24)
+        txtSearch.grid(row=0,column=2,padx=2)
+
+        btnSearch=Button(Table_frame,text="Search",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnSearch.grid(row=0,column=3,padx=1)
+
+        btnShowAll=Button(Table_frame,text="Show All",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnShowAll.grid(row=0,column=4,padx=1)
+
+        #=================Show data table==================
+
+        details_table=Frame(Table_frame,bd=2,relief=RIDGE)
+        details_table.place(x=0,y=50,width=860,height=180)
+
+        scroll_x=ttk.Scrollbar(details_table,orient=HORIZONTAL)
+        scroll_y=ttk.Scrollbar(details_table,orient=VERTICAL)
+
+        self.cust_table=ttk.Treeview(details_table,column=("contact","checkin","checkout","roomtype","roomavailable","meal","noOfdays",),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+
+        scroll_x.pack(side=BOTTOM,fill=X)
+        scroll_y.pack(side=RIGHT,fill=Y)
+
+        scroll_x.config(command=self.cust_table.xview)
+        scroll_y.config(command=self.cust_table.yview)
+
+        self.cust_table.heading("contact",text="Contact No")
+        self.cust_table.heading("checkin",text="Check-in Date")
+        self.cust_table.heading("checkout",text="Check-out Date")
+        self.cust_table.heading("roomtype",text="Room Type")
+        self.cust_table.heading("roomavailable",text="Room No")
+        self.cust_table.heading("meal",text="Meal")
+        self.cust_table.heading("noOfdays",text="No of Days")
+
+        self.cust_table["show"]="headings"
+        self.cust_table.column("contact",width=100)
+        self.cust_table.column("checkin",width=100)
+        self.cust_table.column("checkout",width=100)
+        self.cust_table.column("roomtype",width=100)
+        self.cust_table.column("roomavailable",width=100)
+        self.cust_table.column("meal",width=100)
+        self.cust_table.column("noOfdays",width=100)
+        
+        self.cust_table.pack(fill=BOTH,expand=1)
+
+    def Fetch_Contact(self):
+        if self.entry_contact.get()=="":
+            messagebox.showerror("Error","Please enter contact number")
+        else:
+            conn=mysql.connector.connect(host="localhost",username="root",password="password",database="hotel_management")
+            my_cursor=conn.cursor()
+            my_cursor.execute("select * from room where contact=%s",(self.entry_contact.get(),))
+            row=my_cursor.fetchone()
+            if row==None:
+                messagebox.showerror("Error","No record found")
+            else:
+                self.txtcheck_in_date.delete(0,END)
+                self.txtcheck_in_date.insert(0,row[1])
+                self.txt_Check_out.delete(0,END)
+                self.txt_Check_out.insert(0,row[2])
+                self.combo_RoomType.set(row[3])
+                self.txtRoomAvailable.delete(0,END)
+                self.txtRoomAvailable.insert(0,row[4])
+                self.txtMeal.delete(0,END)
+                self.txtMeal.insert(0,row[5])
+                self.txtNoOfDays.delete(0,END)
+                self.txtNoOfDays.insert(0,row[6])
+                self.txtPaidTax.delete(0,END)
+                self.txtPaidTax.insert(0,row[7])
+                self.txtSubTotal.delete(0,END)
+                self.txtSubTotal.insert(0,row[8])
+                self.txtTotalCost.delete(0,END)
+                self.txtTotalCost.insert(0,row[9])
 
 
 
